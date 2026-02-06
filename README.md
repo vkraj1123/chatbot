@@ -1,6 +1,7 @@
-# 💬 Chatbot template
+# 🧠 SHIVAI prototype (Streamlit)
 
-A simple Streamlit app that shows how to build a chatbot using OpenAI's GPT-3.5.
+An offline-first Streamlit prototype that demonstrates SHIVAI's governed agentic loop,
+intent classification, context gating, and a transparent memory/action log.
 
 [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://chatbot-template.streamlit.app/)
 
