@@ -66,6 +66,7 @@ st.caption(
     "Offline-first, agentic, and governed. This demo showcases intent classification, "
     "context gating, and a transparent action log."
 )
+st.caption(f"Running locally from: `{Path(__file__).resolve()}`")
 
 with st.sidebar:
     st.header("Governance Controls")
