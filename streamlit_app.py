@@ -52,7 +52,15 @@ def append_log(entry: str) -> None:
     )
 
 
+def ensure_state() -> None:
+    if "memory" not in st.session_state:
+        st.session_state.memory = []
+    if "action_log" not in st.session_state:
+        st.session_state.action_log = []
+
+
 st.set_page_config(page_title="SHIVAI", page_icon="🧠", layout="wide")
+ensure_state()
 st.title("🧠 SHIVAI — Cognitive & Growth Assistant (Local Prototype)")
 st.caption(
     "Offline-first, agentic, and governed. This demo showcases intent classification, "
@@ -70,11 +78,6 @@ with st.sidebar:
     if st.button("Clear memory"):
         st.session_state.memory = []
         append_log("Memory cleared by user.")
-
-if "memory" not in st.session_state:
-    st.session_state.memory = []
-if "action_log" not in st.session_state:
-    st.session_state.action_log = []
 
 left, right = st.columns([2, 1])
 
