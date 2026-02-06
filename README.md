@@ -1,7 +1,9 @@
 # 🧠 SHIVAI prototype (Streamlit)
 
 An offline-first Streamlit prototype that demonstrates SHIVAI's governed agentic loop,
-intent classification, context gating, and a transparent memory/action log.
+intent classification, context gating, and a transparent memory/action log. The roadmap
+assumes an initial online model integration for validation, followed by a fully offline
+model once the local stack is ready.
 
 [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://chatbot-template.streamlit.app/)
 
