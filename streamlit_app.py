@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from pathlib import Path
+import subprocess
 
 import streamlit as st
 
@@ -59,6 +60,19 @@ def ensure_state() -> None:
         st.session_state.action_log = []
 
 
+def current_git_sha() -> str:
+    try:
+        result = subprocess.run(
+            ["git", "rev-parse", "--short", "HEAD"],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return "unknown"
+    return result.stdout.strip()
+
+
 st.set_page_config(page_title="SHIVAI", page_icon="🧠", layout="wide")
 ensure_state()
 st.title("🧠 SHIVAI — Cognitive & Growth Assistant (Local Prototype)")
@@ -67,6 +81,7 @@ st.caption(
     "context gating, and a transparent action log."
 )
 st.caption(f"Running locally from: `{Path(__file__).resolve()}`")
+st.caption(f"Build: `{current_git_sha()}`")
 
 with st.sidebar:
     st.header("Governance Controls")
