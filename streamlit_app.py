@@ -3,8 +3,13 @@ from __future__ import annotations
 from datetime import datetime
 from pathlib import Path
 import subprocess
+from typing import TYPE_CHECKING, Any
 
 import streamlit as st
+
+if TYPE_CHECKING:
+    import torch
+    from transformers import AutoModelForCausalLM, AutoTokenizer
 
 
 VISION_PATH = Path(__file__).with_name("SHIVAI_VISION.md")
@@ -60,6 +65,51 @@ def ensure_state() -> None:
         st.session_state.action_log = []
 
 
+@st.cache_resource(show_spinner="Loading local Sarvam-1 model...")
+def load_local_model(model_path: str) -> tuple[Any, Any]:
+    from transformers import AutoModelForCausalLM, AutoTokenizer
+    import torch
+
+    tokenizer = AutoTokenizer.from_pretrained(model_path, local_files_only=True)
+    model = AutoModelForCausalLM.from_pretrained(model_path, local_files_only=True)
+    model.eval()
+    if torch.cuda.is_available():
+        model.to("cuda")
+    return tokenizer, model
+
+
+def generate_local_model_response(
+    model_path: str,
+    prompt: str,
+    mode: str,
+    intent: str,
+    context_gate: str,
+    max_tokens: int,
+) -> str:
+    try:
+        tokenizer, model = load_local_model(model_path)
+        device = model.device
+        system_prompt = (
+            "You are SHIVAI, an offline-first cognitive companion. "
+            f"Mode: {mode}. Intent: {intent}. Context gate: {context_gate}. "
+            "Respond concisely with governance-first guidance."
+        )
+        input_text = f"{system_prompt}\nUser: {prompt}\nSHIVAI:"
+        inputs = tokenizer(input_text, return_tensors="pt").to(device)
+        outputs = model.generate(
+            **inputs,
+            max_new_tokens=max_tokens,
+            do_sample=False,
+        )
+        decoded = tokenizer.decode(outputs[0], skip_special_tokens=True)
+        return decoded.split("SHIVAI:", 1)[-1].strip()
+    except (OSError, ValueError, ModuleNotFoundError) as error:
+        return (
+            "Local Sarvam-1 model could not be loaded. "
+            f"Check the model path and files. ({error})"
+        )
+
+
 def current_git_sha() -> str:
     try:
         result = subprocess.run(
@@ -89,6 +139,9 @@ with st.sidebar:
     allow_tools = st.toggle("Allow tool execution", value=False)
     allow_fresh_info = st.toggle("Allow fresh information", value=False)
     store_memory = st.toggle("Store to memory", value=True)
+    use_local_model = st.toggle("Use local Sarvam-1 model", value=False)
+    model_path = st.text_input("Local model path", value="models/sarvam-1")
+    max_tokens = st.slider("Max new tokens", min_value=64, max_value=512, value=192)
     st.divider()
     st.subheader("Memory")
     if st.button("Clear memory"):
@@ -109,7 +162,18 @@ with left:
         if prompt.strip():
             intent = classify_intent(prompt)
             context_gate = choose_context_gate(intent, allow_fresh_info)
-            response = generate_response(prompt, mode, intent, context_gate)
+            if use_local_model:
+                response_text = generate_local_model_response(
+                    model_path,
+                    prompt,
+                    mode,
+                    intent,
+                    context_gate,
+                    max_tokens,
+                )
+                response = f"{response_text}"
+            else:
+                response = generate_response(prompt, mode, intent, context_gate)
             st.markdown(response)
             append_log(f"Loop executed with intent '{intent}' and gate '{context_gate}'.")
             if store_memory:
