@@ -1,19 +1,30 @@
-# 💬 Chatbot template
+# SHIVAI — Personal Cognitive & Growth Assistant (Prototype)
 
-A simple Streamlit app that shows how to build a chatbot using OpenAI's GPT-3.5.
+This repository contains a Streamlit prototype for **SHIVAI**, an offline-first, agentic personal intelligence assistant focused on human growth across focus, learning, decision-making, and long-term continuity.
 
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://chatbot-template.streamlit.app/)
+The app is currently a lightweight interface that:
 
-### How to run it on your own machine
+- Captures SHIVAI's foundational vision and operating principles.
+- Lets you choose behavioral mode (**Exploration** or **Exploitation**).
+- Provides a guided chat experience seeded with SHIVAI governance constraints.
 
-1. Install the requirements
+> Note: This prototype uses an OpenAI API key for model access. The long-term SHIVAI direction remains local-first and sovereignty-preserving.
 
+## Run locally
+
+1. Install dependencies:
+
+   ```bash
+   pip install -r requirements.txt
    ```
-   $ pip install -r requirements.txt
+
+2. Start the app:
+
+   ```bash
+   streamlit run streamlit_app.py
    ```
 
-2. Run the app
+## Project files
 
-   ```
-   $ streamlit run streamlit_app.py
-   ```
+- `streamlit_app.py` — Main Streamlit UI and chat flow.
+- `SHIVAI_VISION.md` — Canonical vision document used to ground future architecture.
